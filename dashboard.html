@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsychoFlow Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-teal-50 app-bg">
+
+<nav class="bg-pink-600 text-white p-3 sm:p-4 shadow-lg">
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="font-bold text-lg sm:text-xl">PsychoFlow</div>
+            <div class="flex flex-wrap justify-center gap-1 sm:gap-2">
+                <a href="dashboard.html" class="nav-link active px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="dashboard">Dashboard</a>
+                <a href="contribution.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="contribution">Contribute</a>
+                <a href="statistics.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="statistics">Statistics</a>
+                <a href="luna.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="luna">Luna AI</a>
+                <a href="login.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="login">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Add this style block after Tailwind CSS -->
+<style>
+    .nav-link {
+        position: relative;
+        background: transparent;
+        border: none;
+    }
+    
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%) scaleX(0);
+        width: 80%;
+        height: 2px;
+        background: white;
+        transition: transform 0.3s ease;
+    }
+    
+    .nav-link:hover::after {
+        transform: translateX(-50%) scaleX(1);
+    }
+    
+    .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        font-weight: 600;
+    }
+    
+    .nav-link.active::after {
+        transform: translateX(-50%) scaleX(1);
+        background: #ffd700; /* Gold color for active indicator */
+        height: 3px;
+    }
+    
+    /* Add a subtle glow effect for active link */
+    .nav-link.active {
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    }
+    
+    /* Mobile adjustments */
+    @media (max-width: 640px) {
+        .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .nav-link::after {
+            width: 60%;
+            height: 1.5px;
+        }
+    }
+</style>
+
+<div class="max-w-6xl mx-auto p-8">
+    <h1 class="text-4xl font-bold text-pink-600 mb-8">Welcome to PsychoFlow Dashboard</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div id="donor-section" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold text-pink-600 mb-4">Donor Hub</h2>
+            <p class="text-gray-600 mb-4">Support menstrual health initiatives around the world.</p>
+            <div class="space-y-3">
+                <a href="contribution.html" class="block bg-pink-600 text-white p-3 rounded text-center hover:bg-pink-700">Make Contribution</a>
+                <a href="statistics.html" class="block bg-teal-600 text-white p-3 rounded text-center hover:bg-teal-700">View Statistics</a>
+            </div>
+        </div>
+
+       
+        <div id="receiver-section" class="bg-white p-6 rounded-lg shadow-lg">
+             <h2 class="text-2xl font-bold text-teal-600 mb-4">Receiver Hub</h2>
+             <p class="text-gray-600 mb-4">Browse urgent requests from communities in need.</p>
+
+           <div class="space-y-3">
+                 <a href="recepients.html"
+                 class="block bg-teal-600 text-white p-3 rounded text-center hover:bg-teal-700">
+                  View Urgent Requests
+                </a>
+
+                <a href="recepeintsdet.html"
+                 class="block bg-pink-600 text-white p-3 rounded text-center hover:bg-pink-700">
+                   Recipients Details Entry
+                 </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg mt-8">
+        <h2 class="text-2xl font-bold text-pink-600 mb-4">Luna AI Companion</h2>
+        <p class="text-gray-600 mb-4">Need support or have questions? Chat with Luna, your AI mental health companion.</p>
+        <a href="luna.html" class="bg-pink-600 text-white p-3 rounded text-center inline-block hover:bg-pink-700">Talk to Luna AI</a>
+    </div>
+</div>
+
+</body>
+</html>
