@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register Support Request | PsychoFlow</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-pink-50 to-teal-50 min-h-screen app-bg">
+
+<nav class="bg-pink-600 text-white p-4 flex justify-between">
+    <div class="font-bold text-xl">PsychoFlow</div>
+    <a href="recepients.html" class="hover:bg-pink-700 px-4 py-2 rounded">
+        View Requests
+    </a>
+</nav>
+
+<div class="max-w-xl mx-auto mt-12 bg-white p-8 rounded-xl shadow-lg">
+
+    <h2 class="text-3xl font-bold text-pink-600 mb-6 text-center">
+        Register Support Request
+    </h2>
+
+    <form id="recipientForm" class="space-y-4">
+
+        <input type="text" id="name" placeholder="Full Name" required
+            class="w-full p-3 border rounded-lg">
+
+        <input type="text" id="location" placeholder="Location" required
+            class="w-full p-3 border rounded-lg">
+
+        <textarea id="need" placeholder="Describe your need..." required
+            class="w-full p-3 border rounded-lg"></textarea>
+
+        <select id="urgency" required
+            class="w-full p-3 border rounded-lg">
+            <option value="">Select Urgency Level</option>
+            <option value="urgent">🔴 Urgent</option>
+            <option value="standard">🟢 Standard</option>
+        </select>
+
+        <button type="submit"
+            class="w-full bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700">
+            Submit Request
+        </button>
+
+    </form>
+</div>
+
+<script>
+document.getElementById("recipientForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const recipient = {
+        name: document.getElementById("name").value,
+        location: document.getElementById("location").value,
+        need: document.getElementById("need").value,
+        urgency: document.getElementById("urgency").value
+    };
+
+    let recipients = JSON.parse(localStorage.getItem("recipients")) || [];
+    recipients.push(recipient);
+
+    localStorage.setItem("recipients", JSON.stringify(recipients));
+
+    window.location.href = "recepients.html";
+});
+</script>
+
+</body>
+</html>

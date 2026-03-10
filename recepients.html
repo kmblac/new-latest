@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipients | PsychoFlow</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-pink-50 to-teal-50 app-bg">
+
+<nav class="bg-pink-600 text-white p-4 flex justify-between items-center shadow-lg">
+    <div class="font-bold text-xl">PsychoFlow</div>
+    <div class="space-x-4 flex">
+        <a href="index.html" class="hover:bg-pink-700 px-3 py-2 rounded">Dashboard</a>
+        <a href="contribution.html" class="hover:bg-pink-700 px-3 py-2 rounded">Contribute</a>
+        <a href="statistics.html" class="hover:bg-pink-700 px-3 py-2 rounded">Statistics</a>
+        <a href="luna.html" class="hover:bg-pink-700 px-3 py-2 rounded">Luna AI</a>
+        <a href="login.html" class="hover:bg-pink-700 px-3 py-2 rounded">Logout</a>
+    </div>
+</nav>
+
+<div class="max-w-6xl mx-auto p-8">
+    <h1 class="text-4xl font-bold text-pink-600 mb-8">Support Requests</h1>
+    
+    <div class="mb-12">
+        <h2 class="text-2xl font-bold text-red-600 mb-6">🔴 Urgent Requests</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-red-50 border-l-4 border-red-600 p-6 rounded-lg shadow">
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Sarah</h3>
+                <p class="text-gray-700 mb-2"><strong>Location:</strong> Rural Kenya</p>
+                <p class="text-gray-700 mb-4"><strong>Need:</strong> Immediate menstrual health support</p>
+                <a href="contribution.html?recipient=Sarah" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 inline-block">Contribute Now</a>
+            </div>
+            
+            <div class="bg-red-50 border-l-4 border-red-600 p-6 rounded-lg shadow">
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Aisha</h3>
+                <p class="text-gray-700 mb-2"><strong>Location:</strong> Nigeria</p>
+                <p class="text-gray-700 mb-4"><strong>Need:</strong> School support and education supplies</p>
+                <a href="contribution.html?recipient=Aisha" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 inline-block">Contribute Now</a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-bold text-teal-600 mb-6">🟢 Standard Requests</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-teal-50 border-l-4 border-teal-600 p-6 rounded-lg shadow">
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Maria</h3>
+                <p class="text-gray-700 mb-2"><strong>Location:</strong> Brazil</p>
+                <p class="text-gray-700 mb-4"><strong>Need:</strong> Community health initiative</p>
+                <a href="contribution.html?recipient=Maria" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 inline-block">Contribute Now</a>
+            </div>
+            
+            <div class="bg-teal-50 border-l-4 border-teal-600 p-6 rounded-lg shadow">
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Priya</h3>
+                <p class="text-gray-700 mb-2"><strong>Location:</strong> India</p>
+                <p class="text-gray-700 mb-4"><strong>Need:</strong> Educational resources</p>
+                <a href="contribution.html?recipient=Priya" class="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 inline-block">Contribute Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function loadRecipients(){
+    const recipients = JSON.parse(localStorage.getItem("recipients")) || [];
+
+    const urgentContainer = document.getElementById("urgentContainer");
+    const standardContainer = document.getElementById("standardContainer");
+
+    urgentContainer.innerHTML = "";
+    standardContainer.innerHTML = "";
+
+    recipients.forEach(r => {
+
+        const card = `
+        <div class="${r.urgency === 'urgent' ? 
+            'bg-red-50 border-l-4 border-red-600' : 
+            'bg-teal-50 border-l-4 border-teal-600'} 
+            p-6 rounded-lg shadow">
+
+            <h3 class="text-xl font-bold text-gray-800 mb-2">${r.name}</h3>
+            <p class="text-gray-700 mb-2"><strong>Location:</strong> ${r.location}</p>
+            <p class="text-gray-700 mb-4"><strong>Need:</strong> ${r.need}</p>
+
+            <a href="contribution.html?recipient=${r.name}" 
+               class="${r.urgency === 'urgent' ? 
+               'bg-red-600 hover:bg-red-700' : 
+               'bg-teal-600 hover:bg-teal-700'} 
+               text-white px-4 py-2 rounded inline-block">
+               Contribute Now
+            </a>
+        </div>
+        `;
+
+        if(r.urgency === "urgent"){
+            urgentContainer.innerHTML += card;
+        } else {
+            standardContainer.innerHTML += card;
+        }
+    });
+}
+
+loadRecipients();
+</script>
+
+</body>
+</html>
