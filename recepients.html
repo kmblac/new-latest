@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Requests | PsychoFlow</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .request-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:1.5rem;
+      transition:var(--t); animation:fadeUp 0.4s ease both;
+    }
+    .request-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); }
+    .request-card.urgent { border-left:3px solid #ef4444; }
+    .request-card.standard { border-left:3px solid #22c55e; }
+    .request-name { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; margin-bottom:0.3rem; }
+    .request-meta { font-size:0.82rem; color:var(--text-muted); margin-bottom:0.75rem; }
+    .request-need { font-size:0.88rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.5; }
+  </style>
+</head>
+<body>
+
+<nav class="pf-nav">
+  <div class="brand">PsychoFlow</div>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="contribution.html">Contribute</a>
+    <a href="statistics.html">Statistics</a>
+    <a href="management.html">Management</a>
+    <a href="luna.html">Luna AI</a>
+    <a href="login.html">Logout</a>
+  </div>
+</nav>
+
+<div class="pf-page">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
+    <div>
+      <h1 class="section-title" style="margin-bottom:0.3rem;">Support Requests</h1>
+      <p style="font-size:0.88rem;color:var(--text-muted);">Browse and contribute to those in need.</p>
+    </div>
+    <a href="recepeintsdet.html" class="btn btn-gold">+ Register Request</a>
+  </div>
+
+  <!-- Urgent -->
+  <h2 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+    <span class="badge badge-urgent">🔴 Urgent</span>
+  </h2>
+  <div class="grid-2" id="urgentContainer" style="margin-bottom:2.5rem;">
+    <div class="request-card urgent">
+      <div class="request-name">Sarah</div>
+      <div class="request-meta">📍 Rural Kenya</div>
+      <div class="request-need">Immediate menstrual health support — needs pads and hygiene supplies urgently.</div>
+      <a href="contribution.html?recipient=Sarah" class="btn btn-danger btn-sm">Contribute Now</a>
+    </div>
+    <div class="request-card urgent">
+      <div class="request-name">Aisha</div>
+      <div class="request-meta">📍 Nigeria</div>
+      <div class="request-need">School support and education supplies required to continue her studies.</div>
+      <a href="contribution.html?recipient=Aisha" class="btn btn-danger btn-sm">Contribute Now</a>
+    </div>
+  </div>
+
+  <!-- Standard -->
+  <h2 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;">
+    <span class="badge badge-standard">🟢 Standard</span>
+  </h2>
+  <div class="grid-2" id="standardContainer">
+    <div class="request-card standard">
+      <div class="request-name">Maria</div>
+      <div class="request-meta">📍 Brazil</div>
+      <div class="request-need">Community health initiative — building local awareness and providing resources.</div>
+      <a href="contribution.html?recipient=Maria" class="btn btn-primary btn-sm">Contribute Now</a>
+    </div>
+    <div class="request-card standard">
+      <div class="request-name">Priya</div>
+      <div class="request-meta">📍 India</div>
+      <div class="request-need">Educational resources for girls in underserved communities.</div>
+      <a href="contribution.html?recipient=Priya" class="btn btn-primary btn-sm">Contribute Now</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Load dynamically registered recipients from localStorage
+function loadRecipients() {
+  const recipients = JSON.parse(localStorage.getItem('recipients')) || [];
+  const urgentEl = document.getElementById('urgentContainer');
+  const standardEl = document.getElementById('standardContainer');
+  recipients.forEach((r, i) => {
+    const isUrgent = r.urgency === 'urgent';
+    const card = document.createElement('div');
+    card.className = `request-card ${r.urgency}`;
+    card.style.animationDelay = `${(i+4)*0.07}s`;
+    card.innerHTML = `
+      <div class="request-name">${r.name}</div>
+      <div class="request-meta">📍 ${r.location}</div>
+      <div class="request-need">${r.need}</div>
+      <a href="contribution.html?recipient=${encodeURIComponent(r.name)}" class="btn ${isUrgent?'btn-danger':'btn-primary'} btn-sm">Contribute Now</a>`;
+    (isUrgent ? urgentEl : standardEl).appendChild(card);
+  });
+}
+loadRecipients();
+</script>
+</body>
+</html>
