@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fund Management | PsychoFlow</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .tabs { display:flex; gap:0.5rem; margin-bottom:2rem; flex-wrap:wrap; }
+    .tab {
+      padding:0.55rem 1.2rem; border-radius:var(--r-md);
+      background:var(--surface); border:1px solid var(--border);
+      color:var(--text-secondary); cursor:pointer; font-size:0.85rem;
+      font-weight:500; transition:var(--t); font-family:'DM Sans',sans-serif;
+    }
+    .tab.active { background:linear-gradient(135deg,var(--g4),var(--g5)); color:#fff; border-color:transparent; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; animation:fadeIn 0.3s ease; }
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px);
+      z-index:200; display:flex; align-items:center; justify-content:center; padding:1rem;
+      opacity:0; pointer-events:none; transition:opacity 0.25s;
+    }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal-box {
+      background:linear-gradient(145deg,#2a1040,#180018);
+      border:1px solid var(--border); border-radius:var(--r-xl);
+      padding:2rem; width:100%; max-width:440px; box-shadow:var(--shadow-lg);
+      transform:translateY(20px); transition:transform 0.25s ease;
+    }
+    .modal-overlay.open .modal-box { transform:translateY(0); }
+    .modal-title { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; margin-bottom:1.5rem; }
+    .form-field { margin-bottom:1rem; }
+    .empty-msg { text-align:center; padding:2.5rem; color:var(--text-muted); font-size:0.9rem; }
+    .alloc-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.82rem; }
+    .progress-mini { height:5px; border-radius:99px; background:rgba(255,255,255,0.08); overflow:hidden; margin-top:0.4rem; }
+    .progress-mini-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--g4),var(--g5)); }
+    .fund-summary { display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:2rem; }
+    .fund-item { flex:1; min-width:160px; }
+    .fund-label { font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:0.3rem; }
+    .fund-val { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; }
+    .delete-btn { background:none; border:none; cursor:pointer; color:rgba(239,68,68,0.6); font-size:1rem; transition:var(--t); padding:0.2rem 0.5rem; border-radius:4px; }
+    .delete-btn:hover { color:#ef4444; background:rgba(239,68,68,0.1); }
+    table { table-layout:fixed; }
+  </style>
+</head>
+<body>
+
+<nav class="pf-nav">
+  <div class="brand">PsychoFlow</div>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="contribution.html">Contribute</a>
+    <a href="statistics.html">Statistics</a>
+    <a href="management.html" class="active">Management</a>
+    <a href="luna.html">Luna AI</a>
+    <a href="login.html">Logout</a>
+  </div>
+</nav>
+
+<div class="pf-page">
+  <h1 class="section-title animate-up">Fund Management</h1>
+  <p class="section-subtitle">Track donors, recipients, and fund allocations in one place.</p>
+
+  <!-- Fund Summary -->
+  <div class="glass animate-up delay-1" style="padding:1.75rem;margin-bottom:2rem;">
+    <div class="fund-summary" id="fundSummary">
+      <div class="fund-item">
+        <div class="fund-label">Total Donated</div>
+        <div class="fund-val" id="sumDonated" style="color:var(--g1);">$0</div>
+      </div>
+      <div class="fund-item">
+        <div class="fund-label">Total Distributed</div>
+        <div class="fund-val" id="sumDistributed" style="color:var(--g3);">$0</div>
+      </div>
+      <div class="fund-item">
+        <div class="fund-label">Remaining Balance</div>
+        <div class="fund-val" id="sumBalance" style="color:var(--g5);">$0</div>
+      </div>
+    </div>
+    <div class="progress-mini"><div class="progress-mini-fill" id="allocationProgress" style="width:0%"></div></div>
+    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;"><span id="allocationPct">0</span>% allocated</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('donors', this)">💛 Donors</div>
+    <div class="tab" onclick="switchTab('recipients', this)">🌸 Recipients</div>
+    <div class="tab" onclick="switchTab('allocations', this)">🔗 Allocations</div>
+  </div>
+
+  <!-- DONORS TAB -->
+  <div class="tab-panel active" id="tab-donors">
+    <div class="glass animate-up" style="padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;">Donors</h2>
+        <button class="btn btn-gold btn-sm" onclick="openModal('donorModal')">+ Add Donor</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="pf-table">
+          <thead><tr><th>Name</th><th>Amount</th><th>Date</th><th>Note</th><th></th></tr></thead>
+          <tbody id="donorTable"><tr><td colspan="5"><div class="empty-msg">No donors yet. Add the first one!</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECIPIENTS TAB -->
+  <div class="tab-panel" id="tab-recipients">
+    <div class="glass animate-up" style="padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;">Recipients</h2>
+        <button class="btn btn-gold btn-sm" onclick="openModal('recipientModal')">+ Add Recipient</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="pf-table">
+          <thead><tr><th>Name</th><th>Amount Received</th><th>Date</th><th>Note</th><th></th></tr></thead>
+          <tbody id="recipientTable"><tr><td colspan="5"><div class="empty-msg">No recipients yet. Add the first one!</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALLOCATIONS TAB -->
+  <div class="tab-panel" id="tab-allocations">
+    <div class="glass animate-up" style="padding:1.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <h2 style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;">Fund Allocations</h2>
+        <button class="btn btn-gold btn-sm" onclick="openModal('allocationModal')">+ Record Allocation</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="pf-table">
+          <thead><tr><th>Donor</th><th>Recipient</th><th>Amount</th><th>Date</th><th></th></tr></thead>
+          <tbody id="allocationTable"><tr><td colspan="5"><div class="empty-msg">No allocations yet.</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DONOR MODAL ─── -->
+<div class="modal-overlay" id="donorModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Donor</div>
+    <div class="form-field"><label class="pf-label">Name</label><input type="text" id="d-name" class="pf-input" placeholder="Full name"></div>
+    <div class="form-field"><label class="pf-label">Amount (USD)</label><input type="number" id="d-amount" class="pf-input" min="0" step="0.01" placeholder="0.00"></div>
+    <div class="form-field"><label class="pf-label">Date</label><input type="date" id="d-date" class="pf-input"></div>
+    <div class="form-field"><label class="pf-label">Note (optional)</label><input type="text" id="d-note" class="pf-input" placeholder="Any additional info"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+      <button class="btn btn-gold btn-full" onclick="saveDonor()">Save Donor</button>
+      <button class="btn btn-ghost" onclick="closeModal('donorModal')" style="min-width:80px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── RECIPIENT MODAL ─── -->
+<div class="modal-overlay" id="recipientModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Recipient</div>
+    <div class="form-field"><label class="pf-label">Name</label><input type="text" id="r-name" class="pf-input" placeholder="Full name"></div>
+    <div class="form-field"><label class="pf-label">Amount Received (USD)</label><input type="number" id="r-amount" class="pf-input" min="0" step="0.01" placeholder="0.00"></div>
+    <div class="form-field"><label class="pf-label">Date</label><input type="date" id="r-date" class="pf-input"></div>
+    <div class="form-field"><label class="pf-label">Note (optional)</label><input type="text" id="r-note" class="pf-input" placeholder="Any additional info"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+      <button class="btn btn-gold btn-full" onclick="saveRecipient()">Save Recipient</button>
+      <button class="btn btn-ghost" onclick="closeModal('recipientModal')" style="min-width:80px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── ALLOCATION MODAL ─── -->
+<div class="modal-overlay" id="allocationModal">
+  <div class="modal-box">
+    <div class="modal-title">Record Allocation</div>
+    <div class="form-field"><label class="pf-label">Donor</label><select id="a-donor" class="pf-input pf-select"><option value="">Select donor…</option></select></div>
+    <div class="form-field"><label class="pf-label">Recipient</label><select id="a-recipient" class="pf-input pf-select"><option value="">Select recipient…</option></select></div>
+    <div class="form-field"><label class="pf-label">Amount (USD)</label><input type="number" id="a-amount" class="pf-input" min="0" step="0.01" placeholder="0.00"></div>
+    <div class="form-field"><label class="pf-label">Date</label><input type="date" id="a-date" class="pf-input"></div>
+    <div style="display:flex;gap:0.75rem;margin-top:1.5rem;">
+      <button class="btn btn-gold btn-full" onclick="saveAllocation()">Save Allocation</button>
+      <button class="btn btn-ghost" onclick="closeModal('allocationModal')" style="min-width:80px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ──────────────────────────────────────────────────
+   STATE  (persisted to localStorage)
+────────────────────────────────────────────────── */
+let donors      = JSON.parse(localStorage.getItem('pf_donors'))      || [];
+let recipients  = JSON.parse(localStorage.getItem('pf_recipients'))  || [];
+let allocations = JSON.parse(localStorage.getItem('pf_allocations')) || [];
+
+function save() {
+  localStorage.setItem('pf_donors',      JSON.stringify(donors));
+  localStorage.setItem('pf_recipients',  JSON.stringify(recipients));
+  localStorage.setItem('pf_allocations', JSON.stringify(allocations));
+}
+
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmt(d)  { return new Date(d).toLocaleDateString('en-KE',{day:'2-digit',month:'short',year:'numeric'}); }
+function fmtAmt(n){ return '$'+parseFloat(n||0).toFixed(2); }
+function uid()   { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+/* ──────────────────────────────────────────────────
+   TABS
+────────────────────────────────────────────────── */
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+/* ──────────────────────────────────────────────────
+   MODALS
+────────────────────────────────────────────────── */
+function openModal(id) {
+  if(id==='allocationModal') populateAllocationSelects();
+  document.getElementById(id).classList.add('open');
+  // Set today's date if empty
+  const dateInput = document.querySelector(`#${id} input[type="date"]`);
+  if(dateInput && !dateInput.value) dateInput.value = today();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); });
+});
+
+/* ──────────────────────────────────────────────────
+   DONORS
+────────────────────────────────────────────────── */
+function saveDonor() {
+  const name   = document.getElementById('d-name').value.trim();
+  const amount = parseFloat(document.getElementById('d-amount').value) || 0;
+  const date   = document.getElementById('d-date').value || today();
+  const note   = document.getElementById('d-note').value.trim();
+  if(!name) { alert('Please enter a name.'); return; }
+  if(amount <= 0) { alert('Please enter a valid amount.'); return; }
+  donors.push({ id:uid(), name, amount, date, note });
+  save(); renderDonors(); updateSummary();
+  closeModal('donorModal');
+  ['d-name','d-amount','d-note'].forEach(id=>document.getElementById(id).value='');
+}
+
+function deleteDonor(id) {
+  if(!confirm('Delete this donor?')) return;
+  donors = donors.filter(d=>d.id!==id);
+  allocations = allocations.filter(a=>a.donorId!==id);
+  save(); renderDonors(); renderAllocations(); updateSummary();
+}
+
+function renderDonors() {
+  const tbody = document.getElementById('donorTable');
+  if(!donors.length){
+    tbody.innerHTML='<tr><td colspan="5"><div class="empty-msg">No donors yet. Add the first one!</div></td></tr>'; return;
+  }
+  tbody.innerHTML = donors.map(d=>`
+    <tr>
+      <td><strong style="color:#fff;">${d.name}</strong></td>
+      <td style="color:var(--g1);font-weight:700;">${fmtAmt(d.amount)}</td>
+      <td>${fmt(d.date)}</td>
+      <td style="color:var(--text-muted);font-size:0.82rem;">${d.note||'—'}</td>
+      <td><button class="delete-btn" onclick="deleteDonor('${d.id}')">✕</button></td>
+    </tr>`).join('');
+}
+
+/* ──────────────────────────────────────────────────
+   RECIPIENTS
+────────────────────────────────────────────────── */
+function saveRecipient() {
+  const name   = document.getElementById('r-name').value.trim();
+  const amount = parseFloat(document.getElementById('r-amount').value) || 0;
+  const date   = document.getElementById('r-date').value || today();
+  const note   = document.getElementById('r-note').value.trim();
+  if(!name) { alert('Please enter a name.'); return; }
+  recipients.push({ id:uid(), name, amount_received:amount, date, note });
+  save(); renderRecipients(); updateSummary();
+  closeModal('recipientModal');
+  ['r-name','r-amount','r-note'].forEach(id=>document.getElementById(id).value='');
+}
+
+function deleteRecipient(id) {
+  if(!confirm('Delete this recipient?')) return;
+  recipients = recipients.filter(r=>r.id!==id);
+  allocations = allocations.filter(a=>a.recipientId!==id);
+  save(); renderRecipients(); renderAllocations(); updateSummary();
+}
+
+function renderRecipients() {
+  const tbody = document.getElementById('recipientTable');
+  if(!recipients.length){
+    tbody.innerHTML='<tr><td colspan="5"><div class="empty-msg">No recipients yet.</div></td></tr>'; return;
+  }
+  tbody.innerHTML = recipients.map(r=>`
+    <tr>
+      <td><strong style="color:#fff;">${r.name}</strong></td>
+      <td style="color:var(--g3);font-weight:700;">${fmtAmt(r.amount_received)}</td>
+      <td>${fmt(r.date)}</td>
+      <td style="color:var(--text-muted);font-size:0.82rem;">${r.note||'—'}</td>
+      <td><button class="delete-btn" onclick="deleteRecipient('${r.id}')">✕</button></td>
+    </tr>`).join('');
+}
+
+/* ──────────────────────────────────────────────────
+   ALLOCATIONS
+────────────────────────────────────────────────── */
+function populateAllocationSelects() {
+  const ds = document.getElementById('a-donor');
+  const rs = document.getElementById('a-recipient');
+  ds.innerHTML = '<option value="">Select donor…</option>' + donors.map(d=>`<option value="${d.id}">${d.name} (${fmtAmt(d.amount)})</option>`).join('');
+  rs.innerHTML = '<option value="">Select recipient…</option>' + recipients.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+}
+
+function saveAllocation() {
+  const donorId     = document.getElementById('a-donor').value;
+  const recipientId = document.getElementById('a-recipient').value;
+  const amount      = parseFloat(document.getElementById('a-amount').value) || 0;
+  const date        = document.getElementById('a-date').value || today();
+  if(!donorId)     { alert('Please select a donor.'); return; }
+  if(!recipientId) { alert('Please select a recipient.'); return; }
+  if(amount <= 0)  { alert('Please enter a valid amount.'); return; }
+  allocations.push({ id:uid(), donorId, recipientId, amount, date });
+  save(); renderAllocations(); updateSummary();
+  closeModal('allocationModal');
+  document.getElementById('a-amount').value='';
+}
+
+function deleteAllocation(id) {
+  if(!confirm('Delete this allocation?')) return;
+  allocations = allocations.filter(a=>a.id!==id);
+  save(); renderAllocations(); updateSummary();
+}
+
+function renderAllocations() {
+  const tbody = document.getElementById('allocationTable');
+  if(!allocations.length){
+    tbody.innerHTML='<tr><td colspan="5"><div class="empty-msg">No allocations yet.</div></td></tr>'; return;
+  }
+  tbody.innerHTML = allocations.map(a => {
+    const d = donors.find(x=>x.id===a.donorId);
+    const r = recipients.find(x=>x.id===a.recipientId);
+    return `<tr>
+      <td style="color:#fff;">${d?d.name:'<em style="color:var(--text-muted)">Deleted</em>'}</td>
+      <td style="color:var(--g2);">${r?r.name:'<em style="color:var(--text-muted)">Deleted</em>'}</td>
+      <td style="color:var(--g1);font-weight:700;">${fmtAmt(a.amount)}</td>
+      <td>${fmt(a.date)}</td>
+      <td><button class="delete-btn" onclick="deleteAllocation('${a.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ──────────────────────────────────────────────────
+   SUMMARY
+────────────────────────────────────────────────── */
+function updateSummary() {
+  const totalDonated     = donors.reduce((s,d)=>s+parseFloat(d.amount||0), 0);
+  const totalDistributed = allocations.reduce((s,a)=>s+parseFloat(a.amount||0), 0);
+  const balance          = totalDonated - totalDistributed;
+  const pct              = totalDonated > 0 ? Math.min(100, Math.round((totalDistributed/totalDonated)*100)) : 0;
+  document.getElementById('sumDonated').textContent     = fmtAmt(totalDonated);
+  document.getElementById('sumDistributed').textContent = fmtAmt(totalDistributed);
+  document.getElementById('sumBalance').textContent     = fmtAmt(balance);
+  document.getElementById('allocationProgress').style.width = pct+'%';
+  document.getElementById('allocationPct').textContent  = pct;
+}
+
+/* ── Init ── */
+renderDonors(); renderRecipients(); renderAllocations(); updateSummary();
+</script>
+</body>
+</html>

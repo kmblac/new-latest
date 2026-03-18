@@ -1,80 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Register Support Request | PsychoFlow</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Support Request | PsychoFlow</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .form-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:3rem 1.5rem; }
+    .form-card { width:100%; max-width:500px; padding:2.5rem; border-radius:var(--r-xl); background:rgba(24,0,24,0.55); border:1px solid var(--border); backdrop-filter:blur(20px); box-shadow:var(--shadow-lg); animation:fadeUp 0.45s ease both; }
+    .field { margin-bottom:1.1rem; }
+    .urgency-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+    .urgency-opt { cursor:pointer; border:1px solid var(--border); border-radius:var(--r-md); padding:1rem; text-align:center; transition:var(--t); }
+    .urgency-opt:hover,.urgency-opt.selected { background:var(--surface-solid); }
+    .urgency-opt input { display:none; }
+    .urgency-opt.urgent.selected { border-color:#ef4444; background:rgba(239,68,68,0.12); }
+    .urgency-opt.standard.selected { border-color:#22c55e; background:rgba(34,197,94,0.12); }
+    .urgency-label { font-size:1.2rem; display:block; margin-bottom:0.3rem; }
+    .urgency-text { font-size:0.82rem; color:var(--text-muted); }
+  </style>
 </head>
+<body>
 
-<body class="bg-gradient-to-br from-pink-50 to-teal-50 min-h-screen app-bg">
-
-<nav class="bg-pink-600 text-white p-3 sm:p-4 shadow-lg">
-    <div class="max-w-6xl mx-auto">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div class="font-bold text-lg sm:text-xl">PsychoFlow</div>
-            <div class="flex flex-wrap justify-center gap-1 sm:gap-2">
-                <a href="dashboard.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="dashboard">Dashboard</a>
-                <a href="contribution.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="contribution">Contribute</a>
-                <a href="statistics.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="statistics">Statistics</a>
-                <a href="luna.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="luna">Luna AI</a>
-                <a href="login.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="login">Logout</a>
-            </div>
-        </div>
-    </div>
+<nav class="pf-nav">
+  <div class="brand">PsychoFlow</div>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="recepients.html">View Requests</a>
+  </div>
 </nav>
 
-<div class="max-w-xl mx-auto mt-12 bg-white p-8 rounded-xl shadow-lg">
+<div class="form-wrap">
+  <div class="form-card">
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:0.4rem;">Register Request</h2>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:2rem;">Tell us about your need and we'll connect you with donors.</p>
 
-    <h2 class="text-3xl font-bold text-pink-600 mb-6 text-center">
-        Register Support Request
-    </h2>
+    <form id="recipientForm">
+      <div class="field">
+        <label class="pf-label">Full Name</label>
+        <input type="text" id="name" class="pf-input" placeholder="Your name" required>
+      </div>
+      <div class="field">
+        <label class="pf-label">Location</label>
+        <input type="text" id="location" class="pf-input" placeholder="City, Country" required>
+      </div>
+      <div class="field">
+        <label class="pf-label">Describe Your Need</label>
+        <textarea id="need" class="pf-input pf-textarea" rows="3" placeholder="What support do you need?" required style="resize:vertical;"></textarea>
+      </div>
+      <div class="field">
+        <label class="pf-label" style="margin-bottom:0.75rem;">Urgency Level</label>
+        <div class="urgency-grid">
+          <label class="urgency-opt urgent" id="opt-urgent">
+            <input type="radio" name="urgency" value="urgent">
+            <span class="urgency-label">🔴</span>
+            <strong style="font-size:0.9rem;">Urgent</strong>
+            <div class="urgency-text">Needs help now</div>
+          </label>
+          <label class="urgency-opt standard" id="opt-standard">
+            <input type="radio" name="urgency" value="standard">
+            <span class="urgency-label">🟢</span>
+            <strong style="font-size:0.9rem;">Standard</strong>
+            <div class="urgency-text">Can wait a little</div>
+          </label>
+        </div>
+      </div>
 
-    <form id="recipientForm" class="space-y-4">
-
-        <input type="text" id="name" placeholder="Full Name" required
-            class="w-full p-3 border rounded-lg">
-
-        <input type="text" id="location" placeholder="Location" required
-            class="w-full p-3 border rounded-lg">
-
-        <textarea id="need" placeholder="Describe your need..." required
-            class="w-full p-3 border rounded-lg"></textarea>
-
-        <select id="urgency" required
-            class="w-full p-3 border rounded-lg">
-            <option value="">Select Urgency Level</option>
-            <option value="urgent">🔴 Urgent</option>
-            <option value="standard">🟢 Standard</option>
-        </select>
-
-        <button type="submit"
-            class="w-full bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700">
-            Submit Request
-        </button>
-
+      <button type="submit" class="btn btn-gold btn-full" style="margin-top:0.5rem;padding:0.9rem;font-size:1rem;">
+        Submit Request →
+      </button>
     </form>
+  </div>
 </div>
 
 <script>
-document.getElementById("recipientForm").addEventListener("submit", function(e){
-    e.preventDefault();
+// Visual urgency selection
+document.querySelectorAll('.urgency-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.urgency-opt').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+  });
+});
 
-    const recipient = {
-        name: document.getElementById("name").value,
-        location: document.getElementById("location").value,
-        need: document.getElementById("need").value,
-        urgency: document.getElementById("urgency").value
-    };
-
-    let recipients = JSON.parse(localStorage.getItem("recipients")) || [];
-    recipients.push(recipient);
-
-    localStorage.setItem("recipients", JSON.stringify(recipients));
-
-    window.location.href = "recepients.html";
+document.getElementById('recipientForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const urgencyChecked = document.querySelector('input[name="urgency"]:checked');
+  if (!urgencyChecked) { alert('Please select an urgency level.'); return; }
+  const recipient = {
+    name: document.getElementById('name').value,
+    location: document.getElementById('location').value,
+    need: document.getElementById('need').value,
+    urgency: urgencyChecked.value
+  };
+  const recipients = JSON.parse(localStorage.getItem('recipients')) || [];
+  recipients.push(recipient);
+  localStorage.setItem('recipients', JSON.stringify(recipients));
+  window.location.href = 'recepients.html';
 });
 </script>
-
 </body>
 </html>

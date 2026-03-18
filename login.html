@@ -1,33 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+<script>
+  if (sessionStorage.getItem('loggedIn')) {
+    window.location.href = 'index.html';
+  }
+</script>
 <head>
-<meta charset="UTF-8">
-<title>Login | PsychoFlow</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | PsychoFlow</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh; }
+    .auth-card { width:420px; padding:2.5rem; border-radius:var(--r-xl); background:rgba(24,0,24,0.55); border:1px solid var(--border); backdrop-filter:blur(20px); box-shadow:var(--shadow-lg); animation:fadeUp 0.5s ease both; }
+    .auth-logo { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; background:linear-gradient(90deg,var(--g1),var(--g2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-align:center; margin-bottom:0.4rem; }
+    .auth-sub { text-align:center; font-size:0.85rem; color:var(--text-muted); margin-bottom:2rem; }
+    .field { margin-bottom:1.1rem; }
+    .auth-footer { text-align:center; margin-top:1.5rem; font-size:0.84rem; color:var(--text-muted); }
+    .auth-footer a { color:var(--g2); text-decoration:none; }
+    .auth-footer a:hover { color:var(--g1); }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-pink-100 to-teal-100 min-h-screen flex items-center justify-center app-bg">
+<body>
 
-<div class="bg-white p-8 rounded-2xl shadow-xl w-96">
-    <h2 class="text-2xl font-bold text-center text-pink-600 mb-6">Login</h2>
+<div class="auth-card">
+  <div class="auth-logo">PsychoFlow</div>
+  <div class="auth-sub">Sign in to your account</div>
 
-   <form action="dashboard.html">
-        <input type="email" placeholder="Email" required
-            class="w-full mb-4 p-3 border rounded-lg">
-
-        <input type="password" placeholder="Password" required
-            class="w-full mb-4 p-3 border rounded-lg">
-
-        <button class="w-full bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700">
-            Login
-        </button>
-    </form>
-
-    <div class="text-center mt-4 text-sm">
-        <a href="forgot%20password.html" class="text-teal-600">Forgot Password?</a><br>
-        <a href="register.html" class="text-pink-600">Create Account</a>
+  <form onsubmit="handleLogin(event)">
+    <div class="field">
+      <label class="pf-label">Email</label>
+      <input type="email" class="pf-input" placeholder="you@example.com" required>
     </div>
+    <div class="field">
+      <label class="pf-label">Password</label>
+      <input type="password" class="pf-input" placeholder="••••••••" required>
+    </div>
+
+    <button type="submit" class="btn btn-gold btn-full" style="margin-top:0.5rem;font-size:1rem;padding:0.85rem;">
+      Sign In
+    </button>
+  </form>
+
+  <div class="auth-footer" style="margin-top:1rem;">
+    <a href="forgot_password.html">Forgot Password?</a>
+  </div>
+  <div class="auth-footer">
+    Don't have an account? <a href="register.html">Create one</a>
+  </div>
 </div>
+<script>
+  function handleLogin(e) {
+    e.preventDefault();
+    sessionStorage.setItem('loggedIn', 'true');
+    window.location.href = 'index.html';
+  }
+</script>
 
 </body>
 </html>

@@ -1,217 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Make a Contribution</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make a Contribution | PsychoFlow</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    .preset-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; margin-bottom:1.5rem; }
+    .preset-btn {
+      background:var(--surface); border:1px solid var(--border); color:var(--text-primary);
+      border-radius:var(--r-md); padding:0.9rem 0.5rem; cursor:pointer; font-family:'Syne',sans-serif;
+      font-size:0.95rem; font-weight:700; text-align:center; transition:var(--t);
+    }
+    .preset-btn:hover,.preset-btn.selected {
+      background:linear-gradient(135deg,var(--g4),var(--g5));
+      border-color:transparent; box-shadow:0 4px 18px rgba(42,17,180,0.4);
+    }
+    .preset-btn .sub { display:block; font-family:'DM Sans',sans-serif; font-size:0.72rem; font-weight:400; color:var(--text-muted); margin-top:0.2rem; }
+    .preset-btn:hover .sub,.preset-btn.selected .sub { color:rgba(255,255,255,0.7); }
+    .amount-display {
+      font-family:'Syne',sans-serif; font-size:3rem; font-weight:800; text-align:center;
+      background:linear-gradient(90deg,var(--g1),var(--g2)); -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent; background-clip:text; margin:1rem 0;
+    }
+    .method-tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; }
+    .method-tab {
+      flex:1; padding:0.65rem; border-radius:var(--r-md); border:1px solid var(--border);
+      background:var(--surface); color:var(--text-secondary); cursor:pointer;
+      font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; text-align:center; transition:var(--t);
+    }
+    .method-tab.active {
+      background:linear-gradient(135deg,var(--g4),var(--g5)); color:#fff; border-color:transparent;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-pink-50 to-teal-50 app-bg">
+<body>
 
-<nav class="bg-pink-600 text-white p-3 sm:p-4 shadow-lg">
-    <div class="max-w-6xl mx-auto">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div class="font-bold text-lg sm:text-xl">PsychoFlow</div>
-            <div class="flex flex-wrap justify-center gap-1 sm:gap-2">
-                <a href="dashboard.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="dashboard">Dashboard</a>
-                <a href="contribution.html" class="nav-link active px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="contribution">Contribute</a>
-                <a href="statistics.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="statistics">Statistics</a>
-                <a href="luna.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="luna">Luna AI</a>
-                <a href="login.html" class="nav-link px-3 sm:px-4 py-2 rounded text-sm sm:text-base whitespace-nowrap transition-all duration-300" data-page="login">Logout</a>
-            </div>
-        </div>
-    </div>
+<nav class="pf-nav">
+  <div class="brand">PsychoFlow</div>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="contribution.html" class="active">Contribute</a>
+    <a href="statistics.html">Statistics</a>
+    <a href="management.html">Management</a>
+    <a href="luna.html">Luna AI</a>
+    <a href="login.html">Logout</a>
+  </div>
 </nav>
 
-<div class="max-w-2xl mx-auto p-8">
-    <h1 class="text-4xl font-bold text-pink-600 mb-8">Make a Contribution</h1>
+<div class="pf-page" style="max-width:640px;">
+  <h1 class="section-title animate-up">Make a Contribution</h1>
 
-    <div id="recipientBanner" style="display:none;" class="bg-red-50 border-l-4 border-red-600 p-4 mb-6 rounded text-gray-800">
-        <strong>You are contributing for: </strong><span id="recipientName" class="font-semibold"></span>
+  <!-- Recipient banner -->
+  <div id="recipientBanner" style="display:none;" class="pf-banner animate-up">
+    <strong>Contributing for:</strong> <span id="recipientName"></span>
+  </div>
+
+  <div class="glass animate-up delay-1" style="padding:2rem;">
+    <!-- Currency -->
+    <div style="margin-bottom:1.5rem;">
+      <label class="pf-label">Currency</label>
+      <select id="currencySelect" class="pf-input pf-select" onchange="updatePresetLabels()">
+        <option value="USD">USD – US Dollar</option>
+        <option value="EUR">EUR – Euro</option>
+        <option value="KES">KES – Kenyan Shilling</option>
+        <option value="GBP">GBP – British Pound</option>
+      </select>
     </div>
-    
-    <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-        <label for="currencySelect" class="block font-semibold text-gray-700 mb-3">Currency:</label>
-        <select id="currencySelect" onchange="updatePresetLabels();" class="w-full p-3 border rounded-lg mb-6">
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="KES">KES</option>
-            <option value="GBP">GBP</option>
-        </select>
 
-        <h2 class="text-2xl font-bold text-pink-600 mb-4">Select a Preset Amount:</h2>
-        <div id="presetButtons" class="flex gap-3 mb-6 flex-wrap">
-            <button onclick="selectAmount(5, '1 Month')" data-amount="5" data-label="1 Month" class="bg-pink-600 text-white px-4 py-3 rounded-lg hover:bg-pink-700">5 – 1 Month</button>
-            <button onclick="selectAmount(15, '3 Months')" data-amount="15" data-label="3 Months" class="bg-pink-600 text-white px-4 py-3 rounded-lg hover:bg-pink-700">15 – 3 Months</button>
-            <button onclick="selectAmount(50, '1 Year')" data-amount="50" data-label="1 Year" class="bg-pink-600 text-white px-4 py-3 rounded-lg hover:bg-pink-700">50 – 1 Year</button>
-        </div>
-
-        <h2 class="text-2xl font-bold text-pink-600 mb-4">Or Enter a Custom Amount:</h2>
-        <label for="donationAmount" class="block font-semibold text-gray-700 mb-3">Donation Amount: <span id="amountDisplay" class="text-pink-600">5</span> <span id="currencyDisplay" class="text-pink-600">USD</span></label>
-        <input type="number" id="donationAmount" min="1" step="0.01" value="5"
-               class="w-full mb-6 p-3 border rounded-lg"
-               oninput="updateAmount(this.value)" placeholder="Enter amount">
-
-        <label for="paymentMethod" class="block font-semibold text-gray-700 mb-3">Payment Method:</label>
-        <select id="paymentMethod" class="w-full p-3 border rounded-lg mb-6" onchange="showPaymentFields()">
-            <option value="mpesa">MPESA (Push STK)</option>
-            <option value="paypal">PayPal</option>
-            <option value="bank">Bank Transfer</option>
-        </select>
-
-        <div id="paymentDetails" class="mb-6"></div>
-
-        <button class="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 font-semibold" onclick="confirmDonation()" id="payButton">Pay Now</button>
+    <!-- Presets -->
+    <label class="pf-label">Quick Amounts</label>
+    <div class="preset-grid" id="presetButtons">
+      <button class="preset-btn" onclick="selectAmount(5,'1 Month',this)" data-amount="5" data-label="1 Month">
+        5 <span class="sub">1 Month</span>
+      </button>
+      <button class="preset-btn" onclick="selectAmount(15,'3 Months',this)" data-amount="15" data-label="3 Months">
+        15 <span class="sub">3 Months</span>
+      </button>
+      <button class="preset-btn" onclick="selectAmount(50,'1 Year',this)" data-amount="50" data-label="1 Year">
+        50 <span class="sub">1 Year</span>
+      </button>
     </div>
+
+    <!-- Custom amount -->
+    <label class="pf-label">Custom Amount</label>
+    <input type="number" id="donationAmount" class="pf-input" min="1" step="0.01" value="5"
+           oninput="updateAmount(this.value)" style="font-size:1.1rem;text-align:center;margin-bottom:0.5rem;">
+    <div class="amount-display"><span id="amountDisplay">5</span> <span id="currencyDisplay">USD</span></div>
+
+    <hr class="divider">
+
+    <!-- Payment method -->
+    <label class="pf-label" style="margin-bottom:0.75rem;">Payment Method</label>
+    <div class="method-tabs">
+      <div class="method-tab active" onclick="setMethod('mpesa',this)">📱 MPESA</div>
+      <div class="method-tab" onclick="setMethod('paypal',this)">🅿️ PayPal</div>
+      <div class="method-tab" onclick="setMethod('bank',this)">🏦 Bank</div>
+    </div>
+
+    <div id="paymentDetails"></div>
+
+    <button class="btn btn-gold btn-full" style="margin-top:1.5rem;padding:1rem;font-size:1rem;" onclick="confirmDonation()">
+      Pay Now →
+    </button>
+  </div>
 </div>
 
-    <script>
-        const currencySymbols = {
-            USD: '$',
-            EUR: '€',
-            KES: 'KSh',
-            GBP: '£'
-        };
+<script>
+const currencySymbols = { USD:'$', EUR:'€', KES:'KSh ', GBP:'£' };
+let currentMethod = 'mpesa';
 
-        function selectAmount(amount, label) {
-            document.getElementById('donationAmount').value = amount;
-            updateAmount(amount);
-        }
+function selectAmount(amount, label, btn) {
+  document.getElementById('donationAmount').value = amount;
+  updateAmount(amount);
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
 
-        function updateAmount(value) {
-            document.getElementById('amountDisplay').textContent = value;
-            const currency = document.getElementById('currencySelect').value;
-            document.getElementById('currencyDisplay').textContent = currency;
-        }
+function updateAmount(val) {
+  document.getElementById('amountDisplay').textContent = val;
+  document.getElementById('currencyDisplay').textContent = document.getElementById('currencySelect').value;
+}
 
-        function updatePresetLabels() {
-            const currency = document.getElementById('currencySelect').value;
-            const symbol = currencySymbols[currency] || '';
-            document.getElementById('currencyDisplay').textContent = currency;
+function updatePresetLabels() {
+  const currency = document.getElementById('currencySelect').value;
+  const sym = currencySymbols[currency] || '';
+  document.getElementById('currencyDisplay').textContent = currency;
+  document.querySelectorAll('#presetButtons .preset-btn').forEach(btn => {
+    const amt = btn.dataset.amount;
+    const lab = btn.dataset.label;
+    btn.innerHTML = `${sym}${amt} <span class="sub">${lab}</span>`;
+  });
+}
 
-            document.querySelectorAll('#presetButtons button').forEach(btn => {
-                const amt = btn.getAttribute('data-amount');
-                const lab = btn.getAttribute('data-label');
-                btn.textContent = symbol + amt + ' – ' + lab;
-            });
+function setMethod(method, el) {
+  currentMethod = method;
+  document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('paymentDetails').innerHTML = buildPaymentFields(method);
+}
 
-            updateAmount(document.getElementById('donationAmount').value);
-        }
+function buildPaymentFields(method) {
+  if (method === 'mpesa') return `
+    <label class="pf-label">Phone Number (MPESA)</label>
+    <input type="tel" id="phone" class="pf-input" placeholder="2547XXXXXXXX" required>`;
+  if (method === 'paypal') return `
+    <label class="pf-label">PayPal Email</label>
+    <input type="email" id="paypalEmail" class="pf-input" placeholder="you@example.com" required>`;
+  return `
+    <label class="pf-label">Select Bank</label>
+    <select id="bankSelect" class="pf-input pf-select" required>
+      <optgroup label="Kenyan Banks">
+        <option value="equity">Equity Bank</option>
+        <option value="kcb">KCB</option>
+        <option value="absa">Absa Bank</option>
+        <option value="cooperative">Co-operative Bank</option>
+        <option value="stanbic">Stanbic Bank</option>
+      </optgroup>
+      <optgroup label="International Banks">
+        <option value="hsbc">HSBC</option><option value="citi">Citi Bank</option>
+        <option value="barclays">Barclays</option><option value="wellsfargo">Wells Fargo</option>
+        <option value="chase">Chase</option><option value="boa">Bank of America</option>
+        <option value="dbs">DBS</option><option value="scotiabank">Scotiabank</option>
+        <option value="rbc">RBC</option><option value="ubs">UBS</option>
+        <option value="bbva">BBVA</option><option value="sbi">State Bank of India</option>
+        <option value="santander">Santander</option><option value="unicredit">UniCredit</option>
+        <option value="creditagricole">Crédit Agricole</option><option value="anz">ANZ</option>
+      </optgroup>
+    </select>
+    <label class="pf-label" style="margin-top:1rem;">Card / Account Number</label>
+    <input type="text" id="cardNumber" class="pf-input" placeholder="XXXX-XXXX-XXXX-XXXX" required>`;
+}
 
-        function showPaymentFields() {
-            const method = document.getElementById('paymentMethod').value;
-            const container = document.getElementById('paymentDetails');
-            container.innerHTML = '';
-            if (method === 'mpesa') {
-                container.innerHTML = `<label for="phone" class="block font-semibold text-gray-700 mb-2">Phone Number (MPESA):</label>
-                    <input type="tel" id="phone" placeholder="2547XXXXXXXX" class="w-full p-3 border rounded-lg" required>`;
-            } else if (method === 'paypal') {
-                container.innerHTML = `<label for="paypalEmail" class="block font-semibold text-gray-700 mb-2">PayPal Email:</label>
-                    <input type="email" id="paypalEmail" placeholder="you@example.com" class="w-full p-3 border rounded-lg" required>`;
-            } else if (method === 'bank') {
-                container.innerHTML = `<label for="bankSelect" class="block font-semibold text-gray-700 mb-2">Select Bank:</label>
-                    <select id="bankSelect" class="w-full p-3 border rounded-lg mb-4" required>
-                        <optgroup label="Main Kenyan Banks">
-                            <option value="equity">Equity Bank</option>
-                            <option value="kcb">KCB</option>
-                            <option value="absa">Absa Bank</option>
-                            <option value="cooperative">Co-operative Bank</option>
-                            <option value="stanbic">Stanbic Bank</option>
-                        </optgroup>
-                        <optgroup label="Worldwide Banks">
-                            <option value="hsbc">HSBC</option>
-                            <option value="citi">Citi Bank</option>
-                            <option value="barclays">Barclays</option>
-                            <option value="wellsfargo">Wells Fargo</option>
-                            <option value="chase">Chase</option>
-                            <option value="boa">Bank of America</option>
-                            <option value="dbs">DBS</option>
-                            <option value="scotiabank">Scotiabank</option>
-                            <option value="rbc">RBC</option>
-                            <option value="ubs">UBS</option>
-                            <option value="bbva">BBVA</option>
-                            <option value="sbi">State Bank of India</option>
-                            <option value="santander">Santander</option>
-                            <option value="pnb">PNB</option>
-                            <option value="uniCredit">UniCredit</option>
-                            <option value="creditagricole">Crédit Agricole</option>
-                            <option value="rabobank">Rabobank</option>
-                            <option value="anz">ANZ</option>
-                        </optgroup>
-                    </select>
-                    <label for="cardNumber" class="block font-semibold text-gray-700 mb-2">Card/Account Number:</label>
-                    <input type="text" id="cardNumber" placeholder="XXXX-XXXX-XXXX-XXXX" class="w-full p-3 border rounded-lg" required>`;
-            }
-        }
+function confirmDonation() {
+  const amount = document.getElementById('donationAmount').value;
+  const currency = document.getElementById('currencySelect').value;
+  const sym = currencySymbols[currency] || '';
+  if (currentMethod === 'mpesa') {
+    const phone = (document.getElementById('phone') || {}).value?.trim();
+    if (!phone) { alert('Please enter your MPESA phone number.'); return; }
+    alert(`Initiating MPESA STK push for ${sym}${amount} ${currency} to ${phone}…`);
+  } else if (currentMethod === 'paypal') {
+    const email = (document.getElementById('paypalEmail') || {}).value?.trim();
+    if (!email) { alert('Please enter your PayPal email.'); return; }
+    alert(`Redirecting to PayPal to pay ${sym}${amount} ${currency} using ${email}…`);
+  } else {
+    const bank = (document.getElementById('bankSelect') || {}).value;
+    const card = (document.getElementById('cardNumber') || {}).value?.trim();
+    if (!bank) { alert('Please select your bank.'); return; }
+    if (!card) { alert('Please enter your card/account number.'); return; }
+    alert(`Processing bank payment of ${sym}${amount} ${currency} via ${bank}, account ending ${card.slice(-4)}…`);
+  }
+}
 
-        function confirmDonation() {
-            const amount = document.getElementById('donationAmount').value;
-            const currency = document.getElementById('currencySelect').value;
-            const method = document.getElementById('paymentMethod').value;
-            const symbol = currencySymbols[currency] || '';
+// Read query params
+function getQueryParams() {
+  const p = {};
+  location.search.substring(1).split('&').forEach(pair => {
+    const [k,v] = pair.split('=');
+    if (k) p[decodeURIComponent(k)] = decodeURIComponent(v||'');
+  });
+  return p;
+}
 
-            if (method === 'mpesa') {
-                const phoneEl = document.getElementById('phone');
-                const phone = phoneEl ? phoneEl.value.trim() : '';
-                if (!phone) {
-                    alert('Please enter your phone number to proceed with MPESA payment.');
-                    phoneEl && phoneEl.focus();
-                    return;
-                }
-                alert(`Initiating MPESA STK push for ${symbol}${amount} ${currency} to ${phone}...`);
-            } else if (method === 'paypal') {
-                const emailEl = document.getElementById('paypalEmail');
-                const email = emailEl ? emailEl.value.trim() : '';
-                if (!email) {
-                    alert('Please enter your PayPal email to continue.');
-                    emailEl && emailEl.focus();
-                    return;
-                }
-                alert(`Redirecting to PayPal to pay ${symbol}${amount} ${currency} using ${email}...`);
-            } else if (method === 'bank') {
-                const bankEl = document.getElementById('bankSelect');
-                const cardEl = document.getElementById('cardNumber');
-                const bank = bankEl ? bankEl.value : '';
-                const card = cardEl ? cardEl.value.trim() : '';
-                if (!bank) {
-                    alert('Please select your bank before proceeding.');
-                    bankEl && bankEl.focus();
-                    return;
-                }
-                if (!card) {
-                    alert('Please enter your card or account number to continue.');
-                    cardEl && cardEl.focus();
-                    return;
-                }
-                alert(`Processing bank payment of ${symbol}${amount} ${currency} via ${bank}, card/account ${card}...`);
-            }
-        }
-
-        // parse query parameters
-        function getQueryParams() {
-            const params = {};
-            location.search.substring(1).split('&').forEach(pair => {
-                const [key, value] = pair.split('=');
-                if (key) params[decodeURIComponent(key)] = decodeURIComponent(value || '');
-            });
-            return params;
-        }
-
-        function showRecipient() {
-            const qs = getQueryParams();
-            if (qs.recipient) {
-                document.getElementById('recipientName').textContent = qs.recipient;
-                document.getElementById('recipientBanner').style.display = 'block';
-            }
-        }
-
-        // initialize labels on load
-        document.addEventListener('DOMContentLoaded', () => {
-            updatePresetLabels();
-            showRecipient();
-            showPaymentFields();
-        });
-    </script>
+document.addEventListener('DOMContentLoaded', () => {
+  updatePresetLabels();
+  setMethod('mpesa', document.querySelector('.method-tab'));
+  const qs = getQueryParams();
+  if (qs.recipient) {
+    document.getElementById('recipientName').textContent = qs.recipient;
+    document.getElementById('recipientBanner').style.display = 'block';
+  }
+});
+</script>
 </body>
 </html>

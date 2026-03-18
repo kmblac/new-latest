@@ -1,16 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PsychoFlow - Redirecting...</title>
-    <script>
-        // Automatically redirect to login page
-        window.location.href = 'login.html';
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PsychoFlow – Dashboard</title>
+  <link rel="stylesheet" href="theme.css">
+  <script>
+  // Redirect to login if not authenticated
+  if (!sessionStorage.getItem('loggedIn')) {
+    window.location.href = 'login.html';
+  }
+</script>
 </head>
 <body>
-    <p>Redirecting to login page...</p>
-    <p>If you are not redirected, <a href="login.html">click here</a>.</p>
+
+<nav class="pf-nav">
+  <div class="brand">PsychoFlow</div>
+  <div class="nav-links">
+    <a href="index.html" class="active">Dashboard</a>
+    <a href="contribution.html">Contribute</a>
+    <a href="statistics.html">Statistics</a>
+    <a href="management.html">Management</a>
+    <a href="luna.html">Luna AI</a>
+    <a href="login.html">Logout</a>
+  </div>
+</nav>
+
+<div class="pf-page">
+
+  <!-- Hero -->
+  <div style="margin-bottom:3rem;" class="animate-up">
+    <h1 class="section-title" style="font-size:2.6rem;">Welcome to PsychoFlow</h1>
+    <p class="section-subtitle" style="margin-top:-1rem;">Empowering menstrual health, one contribution at a time.</p>
+  </div>
+
+  <!-- Quick stats -->
+  <div class="grid-3" style="margin-bottom:2.5rem;">
+    <div class="stat-card animate-up delay-1">
+      <div class="stat-label">Total Raised</div>
+      <div class="stat-value">$12,500</div>
+      <div class="stat-sub">Across all donors</div>
+    </div>
+    <div class="stat-card animate-up delay-2">
+      <div class="stat-label">Active Recipients</div>
+      <div class="stat-value">4</div>
+      <div class="stat-sub">Awaiting support</div>
+    </div>
+    <div class="stat-card animate-up delay-3">
+      <div class="stat-label">Pads Distributed</div>
+      <div class="stat-value">45K</div>
+      <div class="stat-sub">Lives touched globally</div>
+    </div>
+  </div>
+
+  <!-- Hub cards -->
+  <div class="grid-2" style="margin-bottom:2.5rem;">
+    <!-- Donor Hub -->
+    <div class="glass animate-up delay-2" style="padding:2rem;">
+      <div style="font-size:2rem;margin-bottom:1rem;">💛</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.6rem;">Donor Hub</h2>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6;">
+        Support menstrual health initiatives around the world. Every contribution makes a real difference.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <a href="contribution.html" class="btn btn-primary btn-full">Make a Contribution</a>
+        <a href="statistics.html" class="btn btn-ghost btn-full">View Statistics</a>
+      </div>
+    </div>
+
+    <!-- Receiver Hub -->
+    <div class="glass animate-up delay-3" style="padding:2rem;">
+      <div style="font-size:2rem;margin-bottom:1rem;">🌸</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.6rem;">Receiver Hub</h2>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6;">
+        Browse urgent requests from communities in need. Register your support request here.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <a href="recepients.html" class="btn btn-gold btn-full">View Urgent Requests</a>
+        <a href="recepeintsdet.html" class="btn btn-ghost btn-full">Register Support Request</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Luna & Management -->
+  <div class="grid-2">
+    <div class="glass animate-up delay-3" style="padding:2rem;">
+      <div style="font-size:2rem;margin-bottom:1rem;">🌙</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.6rem;">Luna AI Companion</h2>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6;">
+        Need support or have questions? Chat with Luna, your AI mental health companion.
+      </p>
+      <a href="luna.html" class="btn btn-primary">Talk to Luna →</a>
+    </div>
+
+    <div class="glass animate-up delay-4" style="padding:2rem;">
+      <div style="font-size:2rem;margin-bottom:1rem;">📊</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:0.6rem;">Fund Management</h2>
+      <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6;">
+        Track donors, recipients, and fund allocations with full transparency.
+      </p>
+      <a href="management.html" class="btn btn-ghost">Open Management →</a>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>
