@@ -34,7 +34,9 @@ psychoflow/
 ### Get your credentials
 - Go to **Project Settings** → **API**.
 - Copy **Project URL** → `SUPABASE_URL`
+https://oocpzqsegrestbnmudtq.supabase.co
 - Copy **anon / public** key → `SUPABASE_ANON_KEY`
+sb_publishable_zWE0_ggFCLsEtalqGk7lmQ_AZiJ8yWf
 
 ---
 
