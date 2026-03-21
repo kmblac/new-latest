@@ -185,16 +185,57 @@
 
 <script>
 /* ──────────────────────────────────────────────────
-   STATE  (persisted to localStorage)
+   API Configuration
 ────────────────────────────────────────────────── */
-let donors      = JSON.parse(localStorage.getItem('pf_donors'))      || [];
-let recipients  = JSON.parse(localStorage.getItem('pf_recipients'))  || [];
-let allocations = JSON.parse(localStorage.getItem('pf_allocations')) || [];
+const API_BASE = 'http://localhost:3001/api';
 
-function save() {
-  localStorage.setItem('pf_donors',      JSON.stringify(donors));
-  localStorage.setItem('pf_recipients',  JSON.stringify(recipients));
-  localStorage.setItem('pf_allocations', JSON.stringify(allocations));
+/* ──────────────────────────────────────────────────
+   STATE  (synced with backend)
+────────────────────────────────────────────────── */
+let donors      = [];
+let recipients  = [];
+let allocations = [];
+
+/* ──────────────────────────────────────────────────
+   API Helper Functions
+────────────────────────────────────────────────── */
+async function apiCall(endpoint, method = 'GET', body = null) {
+  const options = {
+    method,
+    headers: { 'Content-Type': 'application/json' }
+  };
+  if (body) options.body = JSON.stringify(body);
+  
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, options);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`API call failed (${method} ${endpoint}):`, error);
+    alert(`Error: ${error.message}. Make sure the backend is running on port 3001.`);
+    throw error;
+  }
+}
+
+async function loadFromBackend() {
+  try {
+    donors      = (await apiCall('/donors'))      || [];
+    recipients  = (await apiCall('/recipients'))  || [];
+    allocations = (await apiCall('/allocations')) || [];
+    renderDonors();
+    renderRecipients();
+    renderAllocations();
+    updateSummary();
+  } catch (error) {
+    console.error('Failed to load data from backend:', error);
+  }
+}
+
+async function save() {
+  // No-op: data is saved immediately via API calls in each function
+  // This keeps the code structure compatible
 }
 
 function today() { return new Date().toISOString().split('T')[0]; }
@@ -231,24 +272,40 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
 /* ──────────────────────────────────────────────────
    DONORS
 ────────────────────────────────────────────────── */
-function saveDonor() {
+async function saveDonor() {
   const name   = document.getElementById('d-name').value.trim();
   const amount = parseFloat(document.getElementById('d-amount').value) || 0;
   const date   = document.getElementById('d-date').value || today();
   const note   = document.getElementById('d-note').value.trim();
   if(!name) { alert('Please enter a name.'); return; }
   if(amount <= 0) { alert('Please enter a valid amount.'); return; }
-  donors.push({ id:uid(), name, amount, date, note });
-  save(); renderDonors(); updateSummary();
-  closeModal('donorModal');
-  ['d-name','d-amount','d-note'].forEach(id=>document.getElementById(id).value='');
+  
+  try {
+    const newDonor = await apiCall('/donors', 'POST', { name, amount, date, note });
+    donors.push(newDonor);
+    renderDonors();
+    updateSummary();
+    closeModal('donorModal');
+    ['d-name','d-amount','d-note'].forEach(id=>document.getElementById(id).value='');
+  } catch (error) {
+    console.error('Failed to save donor:', error);
+  }
 }
 
-function deleteDonor(id) {
+async function deleteDonor(id) {
   if(!confirm('Delete this donor?')) return;
-  donors = donors.filter(d=>d.id!==id);
-  allocations = allocations.filter(a=>a.donorId!==id);
-  save(); renderDonors(); renderAllocations(); updateSummary();
+  
+  try {
+    await apiCall(`/donors/${id}`, 'DELETE');
+    donors = donors.filter(d=>d.id!==id);
+    // Remove allocations related to this donor (handle both old and new API formats)
+    allocations = allocations.filter(a=>a.donor?.id!==id && a.donorId!==id);
+    renderDonors();
+    renderAllocations();
+    updateSummary();
+  } catch (error) {
+    console.error('Failed to delete donor:', error);
+  }
 }
 
 function renderDonors() {
@@ -269,23 +326,44 @@ function renderDonors() {
 /* ──────────────────────────────────────────────────
    RECIPIENTS
 ────────────────────────────────────────────────── */
-function saveRecipient() {
+async function saveRecipient() {
   const name   = document.getElementById('r-name').value.trim();
   const amount = parseFloat(document.getElementById('r-amount').value) || 0;
   const date   = document.getElementById('r-date').value || today();
   const note   = document.getElementById('r-note').value.trim();
   if(!name) { alert('Please enter a name.'); return; }
-  recipients.push({ id:uid(), name, amount_received:amount, date, note });
-  save(); renderRecipients(); updateSummary();
-  closeModal('recipientModal');
-  ['r-name','r-amount','r-note'].forEach(id=>document.getElementById(id).value='');
+  
+  try {
+    const newRecipient = await apiCall('/recipients', 'POST', { 
+      name, 
+      amount_received: amount, 
+      date, 
+      note 
+    });
+    recipients.push(newRecipient);
+    renderRecipients();
+    updateSummary();
+    closeModal('recipientModal');
+    ['r-name','r-amount','r-note'].forEach(id=>document.getElementById(id).value='');
+  } catch (error) {
+    console.error('Failed to save recipient:', error);
+  }
 }
 
-function deleteRecipient(id) {
+async function deleteRecipient(id) {
   if(!confirm('Delete this recipient?')) return;
-  recipients = recipients.filter(r=>r.id!==id);
-  allocations = allocations.filter(a=>a.recipientId!==id);
-  save(); renderRecipients(); renderAllocations(); updateSummary();
+  
+  try {
+    await apiCall(`/recipients/${id}`, 'DELETE');
+    recipients = recipients.filter(r=>r.id!==id);
+    // Remove allocations related to this recipient (handle both old and new API formats)
+    allocations = allocations.filter(a=>a.recipient?.id!==id && a.recipientId!==id);
+    renderRecipients();
+    renderAllocations();
+    updateSummary();
+  } catch (error) {
+    console.error('Failed to delete recipient:', error);
+  }
 }
 
 function renderRecipients() {
@@ -313,7 +391,7 @@ function populateAllocationSelects() {
   rs.innerHTML = '<option value="">Select recipient…</option>' + recipients.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
 }
 
-function saveAllocation() {
+async function saveAllocation() {
   const donorId     = document.getElementById('a-donor').value;
   const recipientId = document.getElementById('a-recipient').value;
   const amount      = parseFloat(document.getElementById('a-amount').value) || 0;
@@ -321,16 +399,35 @@ function saveAllocation() {
   if(!donorId)     { alert('Please select a donor.'); return; }
   if(!recipientId) { alert('Please select a recipient.'); return; }
   if(amount <= 0)  { alert('Please enter a valid amount.'); return; }
-  allocations.push({ id:uid(), donorId, recipientId, amount, date });
-  save(); renderAllocations(); updateSummary();
-  closeModal('allocationModal');
-  document.getElementById('a-amount').value='';
+  
+  try {
+    const newAllocation = await apiCall('/allocations', 'POST', { 
+      donor_id: donorId,
+      recipient_id: recipientId, 
+      amount, 
+      date 
+    });
+    allocations.push(newAllocation);
+    renderAllocations();
+    updateSummary();
+    closeModal('allocationModal');
+    document.getElementById('a-amount').value='';
+  } catch (error) {
+    console.error('Failed to save allocation:', error);
+  }
 }
 
-function deleteAllocation(id) {
+async function deleteAllocation(id) {
   if(!confirm('Delete this allocation?')) return;
-  allocations = allocations.filter(a=>a.id!==id);
-  save(); renderAllocations(); updateSummary();
+  
+  try {
+    await apiCall(`/allocations/${id}`, 'DELETE');
+    allocations = allocations.filter(a=>a.id!==id);
+    renderAllocations();
+    updateSummary();
+  } catch (error) {
+    console.error('Failed to delete allocation:', error);
+  }
 }
 
 function renderAllocations() {
@@ -339,11 +436,12 @@ function renderAllocations() {
     tbody.innerHTML='<tr><td colspan="5"><div class="empty-msg">No allocations yet.</div></td></tr>'; return;
   }
   tbody.innerHTML = allocations.map(a => {
-    const d = donors.find(x=>x.id===a.donorId);
-    const r = recipients.find(x=>x.id===a.recipientId);
+    // Handle both old format (donorId/recipientId lookup) and new API format (donor/recipient objects)
+    const donorName = a.donor?.name || (donors.find(x=>x.id===a.donorId)?.name) || '';
+    const recipientName = a.recipient?.name || (recipients.find(x=>x.id===a.recipientId)?.name) || '';
     return `<tr>
-      <td style="color:#fff;">${d?d.name:'<em style="color:var(--text-muted)">Deleted</em>'}</td>
-      <td style="color:var(--g2);">${r?r.name:'<em style="color:var(--text-muted)">Deleted</em>'}</td>
+      <td style="color:#fff;">${donorName||'<em style="color:var(--text-muted)">Deleted</em>'}</td>
+      <td style="color:var(--g2);">${recipientName||'<em style="color:var(--text-muted)">Deleted</em>'}</td>
       <td style="color:var(--g1);font-weight:700;">${fmtAmt(a.amount)}</td>
       <td>${fmt(a.date)}</td>
       <td><button class="delete-btn" onclick="deleteAllocation('${a.id}')">✕</button></td>
@@ -367,7 +465,7 @@ function updateSummary() {
 }
 
 /* ── Init ── */
-renderDonors(); renderRecipients(); renderAllocations(); updateSummary();
+loadFromBackend();
 </script>
 </body>
 </html>
