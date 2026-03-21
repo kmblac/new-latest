@@ -22,26 +22,26 @@
   <div class="auth-logo">PsychoFlow</div>
   <div class="auth-sub">Create your account</div>
 
-  <form action="index.html">
+  <form onsubmit="handleRegister(event)">
     <div class="field">
       <label class="pf-label">Full Name</label>
-      <input type="text" class="pf-input" placeholder="Jane Doe" required>
+      <input type="text" id="fullName" class="pf-input" placeholder="Jane Doe" required>
     </div>
     <div class="field">
       <label class="pf-label">Email</label>
-      <input type="email" class="pf-input" placeholder="you@example.com" required>
+      <input type="email" id="email" class="pf-input" placeholder="you@example.com" required>
     </div>
     <div class="field">
       <label class="pf-label">Password</label>
-      <input type="password" class="pf-input" placeholder="••••••••" required>
+      <input type="password" id="password" class="pf-input" placeholder="••••••••" required>
     </div>
     <div class="field">
       <label class="pf-label">Confirm Password</label>
-      <input type="password" class="pf-input" placeholder="••••••••" required>
+      <input type="password" id="confirmPassword" class="pf-input" placeholder="••••••••" required>
     </div>
     <div class="field">
       <label class="pf-label">Role</label>
-      <select class="pf-select pf-input" required>
+      <select id="role" class="pf-select pf-input" required>
         <option value="">Select your role…</option>
         <option value="donor">Donor</option>
         <option value="receiver">Receiver</option>
@@ -56,6 +56,35 @@
   <div class="auth-footer">
     Already have an account? <a href="login.html">Sign in</a>
   </div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabase = createClient('https://oocpzqsegrestbnmudtq.supabase.co', 'sb_secret_Ml-bDTTTa_Q7gBHCZ53-FQ_29kQc_Xu')
+
+async function handleRegister(e) {
+  e.preventDefault()
+  const fullName = document.getElementById('fullName').value
+  const email = document.getElementById('email').value
+  const password = document.getElementById('password').value
+  const confirmPassword = document.getElementById('confirmPassword').value
+  const role = document.getElementById('role').value
+  if (password !== confirmPassword) {
+    alert('Passwords do not match')
+    return
+  }
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+    options: {
+      data: { full_name: fullName, role: role }
+    }
+  })
+  if (error) alert(error.message)
+  else window.location.href = 'index.html'
+}
+</script>
+
 </div>
 
 </body>
