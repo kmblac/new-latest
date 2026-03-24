@@ -3,6 +3,15 @@
 --  Run this in the Supabase SQL Editor (Dashboard → SQL Editor)
 -- ============================================================
 
+-- ── 1. USERS ────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS users (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name  TEXT        NOT NULL,
+  email      TEXT        UNIQUE NOT NULL,
+  role       TEXT        NOT NULL CHECK (role IN ('donor', 'receiver')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- ── 1. DONORS ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS donors (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),

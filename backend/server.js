@@ -8,6 +8,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
+const path    = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 const app  = express();
@@ -16,11 +17,14 @@ const PORT = process.env.PORT || 3001;
 // ── Supabase client ──────────────────────────────────────────
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY   // use SERVICE_ROLE key for full access in server contexts
+  process.env.SUPABASE_SERVICE_ROLE_KEY   // use SERVICE_ROLE key for full access in server contexts
 );
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the parent directory (where HTML files are)
+app.use(express.static(path.join(__dirname, '..')));
 
 // ── Helpers ──────────────────────────────────────────────────
 const handleError = (res, error) => {
@@ -146,6 +150,37 @@ app.get('/api/summary', async (_req, res) => {
   const totalDonated     = (donors      || []).reduce((s, d) => s + parseFloat(d.amount || 0), 0);
   const totalDistributed = (allocations || []).reduce((s, a) => s + parseFloat(a.amount || 0), 0);
   res.json({ totalDonated, totalDistributed, balance: totalDonated - totalDistributed });
+});
+
+// ════════════════════════════════════════════════════════════
+//  USERS
+// ════════════════════════════════════════════════════════════
+
+// POST /api/register — register a new user
+app.post('/api/register', async (req, res) => {
+  const { fullName, email, password, role } = req.body;
+  if (!fullName || !email || !password || !role) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+  // First, sign up with Supabase Auth
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName, role }
+    }
+  });
+  if (authError) return handleError(res, authError);
+
+  // Then, insert into users table
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .insert([{ full_name: fullName, email, role }])
+    .select()
+    .single();
+  if (userError) return handleError(res, userError);
+
+  res.status(201).json({ user: userData, auth: authData });
 });
 
 // ── Start ────────────────────────────────────────────────────
