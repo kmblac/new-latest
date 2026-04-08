@@ -58,7 +58,7 @@
   </div>
 
 <script>
-async function handleRegister(e) {
+function handleRegister(e) {
   e.preventDefault()
   const fullName = document.getElementById('fullName').value
   const email = document.getElementById('email').value
@@ -69,21 +69,34 @@ async function handleRegister(e) {
     alert('Passwords do not match')
     return
   }
+  
   try {
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, email, password, role })
-    })
-    const data = await response.json()
-    if (!response.ok) {
-      alert(data.error)
-    } else {
-      alert('Registration successful!')
-      window.location.href = 'index.html'
+    // Check if user already exists
+    const users = JSON.parse(localStorage.getItem('psychoflow_users')) || []
+    const existingUser = users.find(u => u.email === email)
+    if (existingUser) {
+      alert('User with this email already exists')
+      return
     }
+    
+    // Create new user
+    const newUser = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      full_name: fullName,
+      email,
+      password, // Note: In a real app, this should be hashed
+      role,
+      created_at: new Date().toISOString()
+    }
+    
+    users.push(newUser)
+    localStorage.setItem('psychoflow_users', JSON.stringify(users))
+    
+    alert('Registration successful!')
+    window.location.href = 'index.html'
   } catch (error) {
-    alert('Error: ' + error.message)
+    console.error('Registration failed:', error)
+    alert('Error: Registration failed. Please try again.')
   }
 }
 </script>

@@ -92,9 +92,9 @@ document.getElementById('recipientForm').addEventListener('submit', function(e) 
     need: document.getElementById('need').value,
     urgency: urgencyChecked.value
   };
-  const recipients = JSON.parse(localStorage.getItem('recipients')) || [];
+  const recipients = JSON.parse(localStorage.getItem('psychoflow_recipients')) || [];
   recipients.push(recipient);
-  localStorage.setItem('recipients', JSON.stringify(recipients));
+  localStorage.setItem('psychoflow_recipients', JSON.stringify(recipients));
   window.location.href = 'recepients.html';
 });
 </script>

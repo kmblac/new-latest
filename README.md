@@ -12,18 +12,40 @@ psychoflow/
 ├── statistics.html
 ├── recepients.html        ← Support requests listing
 ├── recepeintsdet.html     ← Register support request form
-├── management.html        ← NEW: Donors / Recipients / Allocations
+├── management.html        ← Fund management (donors/recipients/allocations)
 ├── luna.html              ← Luna AI chat
 └── backend/
-    ├── server.js          ← Express API
+    ├── server.js          ← Express API (optional - now uses localStorage)
     ├── package.json
     ├── .env.example       ← Copy to .env and fill in credentials
-    └── schema.sql         ← Supabase database schema
+    └── schema.sql         ← Supabase database schema (optional)
 ```
 
 ---
 
-## 🗄️ 1. Set Up Supabase
+## 🚀 Quick Start (Local Storage Mode)
+
+The application now uses **localStorage** by default for data persistence, eliminating the need for a backend server. Simply open `index.html` in your browser to start using PsychoFlow.
+
+### Features with Local Storage:
+- ✅ User registration and login
+- ✅ Donor management
+- ✅ Recipient management  
+- ✅ Fund allocation tracking
+- ✅ Real-time statistics
+- ✅ Data persists between browser sessions
+
+### Data Storage:
+- Users: `localStorage.psychoflow_users`
+- Donors: `localStorage.psychoflow_donors`
+- Recipients: `localStorage.psychoflow_recipients`
+- Allocations: `localStorage.psychoflow_allocations`
+
+---
+
+## 🗄️ Optional: Backend Setup (Supabase)
+
+If you prefer to use a database backend instead of localStorage, follow these steps:
 
 1. Go to [https://supabase.com](https://supabase.com) and create a free account.
 2. Create a new **Project** (choose a region close to your users, e.g. East Africa).

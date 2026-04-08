@@ -49,21 +49,28 @@
     Don't have an account? <a href="register.html">Create one</a>
   </div>
 </div>
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-const supabase = createClient('https://pzykapecqmooestzphvh.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6eWthcGVjcW1vb2VzdHpwaHZoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTA0NTc4NCwiZXhwIjoyMDkwNjIxNzg0fQ.S9T5ECN64UBxVEh4DmV2w3GsLdnjgmGIpGRP8K18guQ')
-
-async function handleLogin(e) {
+<script>
+function handleLogin(e) {
   e.preventDefault()
   const email = document.getElementById('email').value
   const password = document.getElementById('password').value
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password
-  })
-  if (error) alert(error.message)
-  else window.location.href = 'index.html'
+  
+  try {
+    const users = JSON.parse(localStorage.getItem('psychoflow_users')) || []
+    const user = users.find(u => u.email === email && u.password === password)
+    
+    if (user) {
+      // Store login session
+      sessionStorage.setItem('loggedIn', 'true')
+      sessionStorage.setItem('currentUser', JSON.stringify(user))
+      window.location.href = 'index.html'
+    } else {
+      alert('Invalid email or password')
+    }
+  } catch (error) {
+    console.error('Login failed:', error)
+    alert('Error: Login failed. Please try again.')
+  }
 }
 </script>
 

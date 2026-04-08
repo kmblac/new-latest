@@ -84,7 +84,7 @@
 <script>
 // Load dynamically registered recipients from localStorage
 function loadRecipients() {
-  const recipients = JSON.parse(localStorage.getItem('recipients')) || [];
+  const recipients = JSON.parse(localStorage.getItem('psychoflow_recipients')) || [];
   const urgentEl = document.getElementById('urgentContainer');
   const standardEl = document.getElementById('standardContainer');
   recipients.forEach((r, i) => {

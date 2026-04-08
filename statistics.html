@@ -101,6 +101,27 @@
 </div>
 
 <script>
+// Load data from localStorage if available
+function loadStatsFromStorage() {
+  try {
+    const donors = JSON.parse(localStorage.getItem('psychoflow_donors')) || [];
+    const recipients = JSON.parse(localStorage.getItem('psychoflow_recipients')) || [];
+    const allocations = JSON.parse(localStorage.getItem('psychoflow_allocations')) || [];
+    
+    const totalDonations = donors.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0);
+    const totalDistributed = allocations.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+    const activeDonors = donors.length;
+    const padsDistributed = Math.floor(totalDistributed / 5); // Assuming $5 per pad
+    
+    // Update the hardcoded values with real data
+    document.querySelector('.stat-value').textContent = '$' + totalDonations.toLocaleString();
+    document.querySelectorAll('.stat-value')[1].textContent = padsDistributed.toLocaleString();
+    document.querySelectorAll('.stat-value')[2].textContent = activeDonors.toLocaleString();
+  } catch (error) {
+    console.log('No localStorage data available, using default values');
+  }
+}
+
 // Simple bar chart
 const data = [
   { month:'Oct', val:1800 },
@@ -121,6 +142,9 @@ data.forEach(d => {
       <div class="chart-bar-label">${d.month}</div>
     </div>`;
 });
+
+// Load stats on page load
+loadStatsFromStorage();
 </script>
 </body>
 </html>
